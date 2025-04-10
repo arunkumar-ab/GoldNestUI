@@ -4,14 +4,12 @@ import React, { useState, useEffect } from 'react';
 const CustomerEditForm = ({ currentCustomer, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     id: '',
-    name: '',
+    customerName: '',
     fatherName: '',
-    phone: '',
+    mobileNumber: '',
     email: '',
     address: '',
     area: '',
-    idType: '',
-    idNumber: ''
   });
 
   // Initialize form data when customer changes
@@ -19,14 +17,13 @@ const CustomerEditForm = ({ currentCustomer, onSubmit, onCancel }) => {
     if (currentCustomer) {
       setFormData({
         id: currentCustomer.id,
-        name: currentCustomer.name || '',
+        customerName: currentCustomer.customerName || '',
         fatherName: currentCustomer.fatherName || '',
-        phone: currentCustomer.phone || '',
+        mobileNumber: currentCustomer.mobileNumber || '',
         email: currentCustomer.email || '',
         address: currentCustomer.address || '',
         area: currentCustomer.area || '',
-        idType: currentCustomer.idType || '',
-        idNumber: currentCustomer.idNumber || ''
+        
       });
     }
   }, [currentCustomer]);
@@ -65,7 +62,7 @@ const CustomerEditForm = ({ currentCustomer, onSubmit, onCancel }) => {
           <input
             type="text"
             name="name"
-            value={formData.name}
+            value={formData.customerName}
             onChange={handleInputChange}
             className="w-full p-2 border rounded"
             required
@@ -88,7 +85,7 @@ const CustomerEditForm = ({ currentCustomer, onSubmit, onCancel }) => {
           <input
             type="text"
             name="phone"
-            value={formData.phone}
+            value={formData.mobileNumber}
             onChange={handleInputChange}
             className="w-full p-2 border rounded"
             required

@@ -1,72 +1,4 @@
-// import axios from "axios";
 
-// // Fetch data on component mount
-// export const fetchAllData = async (setCustomers, setItems, setLoading, setError) => {
-//   try {
-//     setLoading(true);
-    
-//     // Using axios for API calls
-//     const [customersResponse, itemsResponse] = await Promise.all([
-//       axios.get('http://localhost:5016/api/customers'),
-//       axios.get('http://localhost:5016/api/items')
-//     ]);
-    
-//     setCustomers(customersResponse.data);
-//     setItems(itemsResponse.data);
-//     setLoading(false);
-//   } catch (err) {
-//     setError(err.response?.data?.message || err.message);
-//     setLoading(false);
-//   }
-// };
-
-// // Calculate total amount from all items
-// export const calculateTotalAmount = (loanData) => {
-//   return loanData.items.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-// };
-
-// // Submit loan data to API
-// export const submitLoanData = async (loanData, customers) => {
-//   let customerId = null;
-  
-//   // Check if this is a new customer or an existing one
-//   const existingCustomer = customers.find(c => c.customerName === loanData.customerName);
-  
-//   if (!existingCustomer) {
-//     // Create a new customer first
-//     const newCustomerData = {
-//       customerName: loanData.customerName,
-//       fatherName: loanData.fatherName,
-//       address: loanData.address,
-//       pincode: loanData.pincode,
-//       mobileNumber: loanData.phone,
-//       email: loanData.email
-//     };
-    
-//     const customerResponse = await axios.post('http://localhost:5016/api/customers', newCustomerData);
-//     customerId = customerResponse.data.customerId;
-//   } else {
-//     customerId = existingCustomer.customerId;
-//   }
-  
-//   // Prepare loan data for submission
-//   const loanPayload = {
-//     billNo: loanData.billNo,
-//     customerId: customerId,
-//     loanIssueDate: loanData.issueDate,
-//     interestRate: parseFloat(loanData.interestRate),
-//     amountLoaned: calculateTotalAmount(loanData),
-//     pawnedItems: loanData.items.map(item => ({
-//       itemId: item.itemId,
-//       itemType: item.itemType,
-//       grossWeight: parseFloat(item.grossWeight),
-//       netWeight: parseFloat(item.netWeight),
-//       amount: parseFloat(item.amount)
-//     }))
-//   };
-  
-//   return await axios.post('http://localhost:5016/api/createloan', loanPayload);
-// };
 import axios from "axios";
 
 // Fetch data on component mount
@@ -88,6 +20,23 @@ export const fetchAllData = async (setCustomers, setItems, setLoading, setError)
     setLoading(false);
   }
 };
+
+export const fetchAfterSubmit = async (setCustomers, setItems,setError) => {
+  try {
+    setLoading(true);
+    
+    // Using axios for API calls
+    const [customersResponse, itemsResponse] = await Promise.all([
+      axios.get('http://localhost:5016/api/customers'),
+      axios.get('http://localhost:5016/api/items')
+    ]);
+    
+    setCustomers(customersResponse.data);
+    setItems(itemsResponse.data);
+  } catch (err) {
+    setError(err.response?.data?.message || err.message);
+  }
+};
 // Calculate total amount from all items
 export const calculateTotalAmount = (loanData) => {
   // Safely handle undefined/null loanData or items array
@@ -101,103 +50,33 @@ export const calculateTotalAmount = (loanData) => {
     return sum + amount;
   }, 0);
 };  
-// const API_BASE_URL = "http://localhost:5016/api";
-
-// export const submitLoanData = async (loanData) => {
-//   try {
-//     console.log("Original loanData items:", loanData.items); // Debug: Check input items
-
-//     // Process items (create new ones if needed)
-//     const processedItems = await Promise.all(
-//       loanData.items.map(async (item) => {
-//         // CASE 1: Item already has an ID → Use as-is (existing item)
-//         if (item.itemID && item.itemID !== 0) {
-//           console.log(`Using existing item (ID: ${item.itemID})`);
-//           return item;
-//         }
-
-//         // CASE 2: New item → Create via API
-//         console.log(`Creating new item: ${item.name}`); // Debug
-
-//         if (!item.name || !item.itemType) {
-//           throw new Error(`New item missing required fields (Name/Type): ${JSON.stringify(item)}`);
-//         }
-
-//         const itemPayload = {
-//           ItemName: item.name,
-//           ItemType: item.itemType,
-//           // Include other required fields for `/api/item` if needed
-//         };
-
-//         console.log("Calling /api/item with:", itemPayload); // Debug API input
-//         const response = await axios.post(`${API_BASE_URL}/api/item`, itemPayload);
-//         console.log("API Response:", response.data); // Debug API response
-
-//         if (!response.data?.itemID) {
-//           throw new Error("Item creation failed: No itemID in response");
-//         }
-
-//         return {
-//           ...item,
-//           itemID: response.data.itemID, // Assign the new ID
-//         };
-//       })
-//     );
-
-//     console.log("Processed items with IDs:", processedItems); // Debug final items
-
-//     // Prepare loan payload
-//     const payload = {
-//       BillNo: loanData.billNo,
-//       AmountLoaned: calculateTotalAmount(processedItems),
-//       LoanIssueDate: loanData.issueDate,
-//       Description: loanData.description || "",
-//       CustomerID: loanData.customerID || 0,
-//       Customer: loanData.customerID ? { /* existing customer */ } : { /* new customer */ },
-//       pawnedItems: processedItems.map((item) => ({
-//         ItemID: item.itemID,
-//         ItemType: item.itemType,
-//         GrossWeight: parseFloat(item.grossWeight),
-//         NetWeight: parseFloat(item.netWeight),
-//         Amount: parseFloat(item.amount),
-//       })),
-//     };
-
-//     console.log("Final loan payload:", payload); // Debug before submission
-//     const loanResponse = await axios.post(`${API_BASE_URL}/createloan`, payload);
-//     return loanResponse;
-
-//   } catch (error) {
-//     console.error("Error in submitLoanData:", error.response?.data || error.message);
-//     throw error;
-//   }
-// };  
-
-// import axios from "axios";
 
 const API_BASE_URL = "http://localhost:5016/api";
 
-export const submitLoanData = async (loanData, customers) => {
+export const submitLoanData = async (loanData,setCustomers, setItems,setError) => {
   try {
-    console.log("Original loanData:", loanData); // Debug input
+    console.log("Original loanData:", loanData);
 
-    // STEP 1: Handle Customer (check if existing or new)
+    // STEP 1: Fetch latest customers list
+    const customersResponse = await axios.get(`${API_BASE_URL}/customers`);
+    const tempCustomers = customersResponse.data || [];
+
+    // STEP 2: Try to find matching customer by name and phone
     let customerId = loanData.customerID;
-    
-    // If no customerID provided, check if customer exists by name/phone
+
     if (!customerId || customerId === 0) {
-      const existingCustomer = customers.find(c => 
-        c.mobileNumber === loanData.phone || 
-        c.customerName === loanData.customerName
+      const matchingCustomer = tempCustomers.find(c =>
+        c.customerName.toLowerCase() === loanData.customerName.toLowerCase() &&
+        c.mobileNumber === loanData.phone
       );
-      
-      if (existingCustomer) {
-        customerId = existingCustomer.customerID;
-        console.log("Found existing customer with ID:", customerId);
+
+      if (matchingCustomer) {
+        console.log("Found existing customer:", matchingCustomer);
+        customerId = matchingCustomer.customerID;
       }
     }
 
-    // STEP 2: Create new customer if needed
+    // STEP 3: Create new customer if still not found
     if (!customerId || customerId === 0) {
       console.log("Creating new customer");
       const newCustomer = {
@@ -209,13 +88,13 @@ export const submitLoanData = async (loanData, customers) => {
         Email: loanData.email,
         Area: loanData.area
       };
-      
+
       const customerResponse = await axios.post(`${API_BASE_URL}/customers`, newCustomer);
       customerId = customerResponse.data.customerID;
       console.log("Created new customer with ID:", customerId);
     }
 
-    // STEP 3: Process items (create new ones if needed)
+    // STEP 4: Process items (create if needed)
     const processedItems = await Promise.all(
       loanData.items.map(async (item) => {
         if (item.itemID && item.itemID !== 0) {
@@ -241,10 +120,10 @@ export const submitLoanData = async (loanData, customers) => {
       })
     );
 
-    // STEP 4: Prepare final loan payload
+    // STEP 5: Submit loan
     const payload = {
       BillNo: loanData.billNo,
-      CustomerID: customerId, // This will now always have a valid ID
+      CustomerID: customerId,
       LoanIssueDate: loanData.issueDate,
       AmountLoaned: calculateTotalAmount(loanData),
       Description: loanData.description || "",
@@ -258,7 +137,10 @@ export const submitLoanData = async (loanData, customers) => {
     };
 
     console.log("Submitting loan with payload:", payload);
-    return await axios.post(`${API_BASE_URL}/createloan`, payload);
+    const result = await axios.post(`${API_BASE_URL}/createloan`, payload);
+    fetchAfterSubmit(setCustomers, setItems,setError);
+    console.log(customers)
+    return result;
 
   } catch (error) {
     console.error("Error in submitLoanData:", error.response?.data || error.message);

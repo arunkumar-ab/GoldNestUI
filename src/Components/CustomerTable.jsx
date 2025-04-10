@@ -25,10 +25,10 @@ const CustomerTable = ({ filteredCustomers, onEditClick , onViewClick}) => {
           ) : (
             filteredCustomers.map((customer) => (
               <tr key={customer.id}>
-                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{customer.id}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.name}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customerID}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.customerName}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.fatherName || '-'}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.phone}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.mobileNumber}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.email || '-'}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{customer.area || '-'}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">{customer.address}</td>
@@ -38,6 +38,12 @@ const CustomerTable = ({ filteredCustomers, onEditClick , onViewClick}) => {
                     className="text-purple-600 hover:text-purple-900"
                   >
                     Edit
+                  </button><span>    </span>
+                  <button 
+                    onClick={() => onViewClick(customer)}
+                    className="text-purple-600 hover:text-purple-900"
+                  >
+                    View
                   </button>
                 </td>
                 

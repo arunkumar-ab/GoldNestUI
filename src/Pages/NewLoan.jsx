@@ -40,7 +40,7 @@ export default function NewLoan() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await submitLoanData(loanData,customers);
+      const response = await submitLoanData(loanData,customers,setCustomers,setItems);
       alert("Loan created successfully with ID: " + response.data.loanId);
       // Reset form or redirect
       // window.location.href = "/loans";

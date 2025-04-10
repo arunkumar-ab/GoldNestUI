@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { fetchAfterSubmit } from "./LoanHelpers";
 
-export default function CustomerForm({ loanData, setLoanData, customers = [] }) {
+export default function CustomerForm({ loanData, setLoanData, customers = [] ,setCustomers,setItems}) {
   const [showCustomerSuggestions, setShowCustomerSuggestions] = useState(false);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
 
@@ -14,6 +15,7 @@ export default function CustomerForm({ loanData, setLoanData, customers = [] }) 
     });
 
     if (name === "customerName") {
+      fetchAfterSubmit(setCustomers, setItems);
       const filtered = customers.filter(customer => 
         customer.customerName.toLowerCase().includes(value.toLowerCase())
       );

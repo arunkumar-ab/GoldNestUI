@@ -74,6 +74,7 @@ export default function PawnedItemsList({ loanData, setLoanData, items }) {
     newShowItemSuggestions[index] = false;
     setShowItemSuggestions(newShowItemSuggestions);
     console.log("inside select", loanData);
+    console.log(loanData);
   };
 
   return (

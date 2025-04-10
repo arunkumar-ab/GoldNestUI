@@ -1,13 +1,13 @@
 // CustomerManagement.jsx
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import CustomerTable from "../../Components/CustomerTable";
 import CustomerEditForm from "./CustomerEditForm";
 import CustomerDetails from "./CustomerDetails";
 import SearchBox from "../../Components/SearchBox";
-import { sampleCustomers } from "../../Components/SampleData";
 
 const CustomerManagement = () => {
-  const [customers, setCustomers] = useState(sampleCustomers);
+  const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,13 +21,29 @@ const CustomerManagement = () => {
     const loadCustomers = async () => {
       setLoading(true);
       try {
-        const sortedCustomers = [...sampleCustomers].sort((a, b) =>
-          a.name.localeCompare(b.name)
+        // Fetch customers from the backend API
+        const response = await axios.get("http://localhost:5016/api/customers");
+        console.log(response.data);
+        // Ensure all customers have a name property before sorting
+        const customersWithNames = response.data.map(customer => ({
+          ...customer,
+
+          name: customer.customerName || "", // Use empty string if name is null/undefined
+          fatherName: customer.fatherName || "",
+          area: customer.area || "",
+          mobileNumber: customer.mobileNumber || ""
+        }));
+        
+        // Sort customers by name
+        const sortedCustomers = [...customersWithNames].sort((a, b) =>
+          (a.name || "").localeCompare(b.name || "")
         );
+        
         setCustomers(sortedCustomers);
         setFilteredCustomers(sortedCustomers);
       } catch (err) {
-        setError("Failed to load customers: " + err.message);
+        console.error("Error fetching customers:", err);
+        setError("Failed to load customers: " + (err.response?.data?.message || err.message));
       } finally {
         setLoading(false);
       }
@@ -39,7 +55,7 @@ const CustomerManagement = () => {
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredCustomers(
-        [...customers].sort((a, b) => a.name.localeCompare(b.name))
+        [...customers].sort((a, b) => (a.name || "").localeCompare(b.name || ""))
       );
       return;
     }
@@ -47,10 +63,10 @@ const CustomerManagement = () => {
     const query = searchQuery.toLowerCase();
     const filtered = customers.filter(
       (customer) =>
-        customer.name?.toLowerCase().includes(query) ||
-        customer.area?.toLowerCase().includes(query) ||
-        customer.phone?.includes(query) ||
-        customer.fatherName?.toLowerCase().includes(query)
+        (customer.CustomerName || "").toLowerCase().includes(query) ||
+        (customer.area || "").toLowerCase().includes(query) ||
+        (customer.mobileNumber || "").includes(query) ||
+        (customer.fatherName || "").toLowerCase().includes(query)
     );
 
     setFilteredCustomers(filtered);
@@ -72,19 +88,29 @@ const CustomerManagement = () => {
   };
 
   const handleViewClick = (customer) => {
+    console.log("Viewing customer:", customer); 
     setViewMode(true);
     setCurrentCustomer(customer);
     setEditMode(false);
   };
 
-  const handleSubmit = (formData) => {
-    const updatedCustomers = customers.map((customer) =>
-      customer.id === formData.id ? { ...formData } : customer
-    );
+  const handleSubmit = async (formData) => {
+    try {
+      // Update customer on the backend
+      await axios.put(`http://localhost:5016/api/customers/${formData.id}`, formData);
+      
+      // Update local state
+      const updatedCustomers = customers.map((customer) =>
+        customer.id === formData.id ? { ...formData } : customer
+      );
 
-    setCustomers(updatedCustomers);
-    setEditMode(false);
-    setCurrentCustomer(null);
+      setCustomers(updatedCustomers);
+      setEditMode(false);
+      setCurrentCustomer(null);
+    } catch (err) {
+      console.error("Error updating customer:", err);
+      alert("Failed to update customer: " + (err.response?.data?.message || err.message));
+    }
   };
 
   const handleCancel = () => {
@@ -140,7 +166,7 @@ const CustomerManagement = () => {
       {/* Modal for Edit Form */}
       {editMode && currentCustomer && (
         <div
-          className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50 modal-overlay backdrop-blur-sm"
+          className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 modal-overlay backdrop-blur-sm"
           onClick={handleOutsideClick}
         >
           <div
