@@ -26,6 +26,7 @@ const CloseLoan = () => {
       
       if (response.data && response.data.length > 0) {
         setFoundLoans(response.data);
+        console.log(response.data);
         setError('');
       } else {
         setError('No loans found with this bill number');
@@ -41,6 +42,7 @@ const CloseLoan = () => {
     try {
       const response = await axios.get(`http://localhost:5016/api/loans/${loanId}`);
       setSelectedLoan(response.data);
+      console.log("Selected loans", response.data);
     } catch (err) {
       setError('Error fetching loan details: ' + (err.response?.data?.message || err.message));
     }
@@ -132,9 +134,9 @@ const CloseLoan = () => {
                 {foundLoans.map((loan) => (
                   <tr key={`loan-${loan.loanID}`} className="border-b hover:bg-gray-50">
                     <td className="py-2 px-4">{loan.billNo}</td>
-                    <td className="py-2 px-4">{loan.customer?.customerName || 'N/A'}</td>
+                    <td className="py-2 px-4">{loan.customerName || 'N/A'}</td>
                     <td className="py-2 px-4">{new Date(loan.loanIssueDate).toLocaleDateString()}</td>
-                    <td className="py-2 px-4">₹{loan.amountLoaned || '0.00'}</td>
+                    <td className="py-2 px-4">{loan.amountLoaned || '0.00'}</td>
                     <td className="py-2 px-4">{loan.status}</td>
                     <td className="py-2 px-4">
                       <button 
@@ -163,6 +165,7 @@ const CloseLoan = () => {
               <p><span className="font-semibold">Amount:</span> ₹{selectedLoan.amountLoaned?.toFixed(2) || '0.00'}</p>
               <p><span className="font-semibold">Date:</span> {new Date(selectedLoan.loanIssueDate).toLocaleDateString()}</p>
               <p><span className="font-semibold">Status:</span> {selectedLoan.status}</p>
+              <p><span className="font-semibold">Description:</span> {selectedLoan.description || 'No description available'}</p>
             </div>
             
             <div>
@@ -182,7 +185,6 @@ const CloseLoan = () => {
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="py-2 px-4 text-left border">Item Name</th>
-                    <th className="py-2 px-4 text-left border">Type</th>
                     <th className="py-2 px-4 text-left border">Gross Weight</th>
                     <th className="py-2 px-4 text-left border">Net Weight</th>
                     <th className="py-2 px-4 text-left border">Value</th>
@@ -192,10 +194,9 @@ const CloseLoan = () => {
                   {selectedLoan.pawnedItems?.map((item, index) => (
                     <tr key={`item-${item.pawnedItemID || index}`} className="border-b hover:bg-gray-50">
                       <td className="py-2 px-4 border">{item.itemName || 'N/A'}</td>
-                      <td className="py-2 px-4 border">{item.itemType || 'N/A'}</td>
-                      <td className="py-2 px-4 border">{item.grossWeight || 'N/A'}</td>
-                      <td className="py-2 px-4 border">{item.netWeight || 'N/A'}</td>
-                      <td className="py-2 px-4 border">₹{item.value?.toFixed(2) || '0.00'}</td>
+                      <td className="py-2 px-4 border">{item.grossWeight || 'N/A'} gm</td>
+                      <td className="py-2 px-4 border">{item.netWeight || 'N/A'} gm</td>
+                      <td className="py-2 px-4 border">₹{item.amount?.toFixed(2) || '0.00'}</td>
                     </tr>
                   ))}
                 </tbody>

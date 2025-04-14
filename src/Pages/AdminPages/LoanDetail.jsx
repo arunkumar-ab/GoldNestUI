@@ -95,7 +95,7 @@ const LoanDetailModal = ({ isOpen, onClose, loanId }) => {
                     <span className="font-medium">{customerDetails.id}</span>
                   </div>
                   <div>
-                    <span className="font-medium">Name: {customerDetails.name}</span>
+                    <span className="font-medium">Name: {customerDetails.customerName}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Father: {customerDetails.fatherName}</span>

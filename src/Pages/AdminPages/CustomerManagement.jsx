@@ -132,7 +132,7 @@ const CustomerManagement = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative ml-5">
       {!viewMode ? (
         <div
           id="main-content"
